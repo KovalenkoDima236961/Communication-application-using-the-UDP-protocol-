@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.dimon"},{"l":"com.dimon.dto"},{"l":"com.dimon.managers"},{"l":"com.dimon.protocol"},{"l":"com.dimon.utils"}];updateSearchResults();
