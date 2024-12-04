@@ -943,6 +943,9 @@ public class P2P {
                 fragmentManager.setSendCorruptedFirstPacket(false); // Reset corruption flag after first packet
             }
 
+            sender += MyUDPProtocol.lengthOfHeader(request);
+            System.out.println("Length of Header: " + MyUDPProtocol.lengthOfHeader(request));
+            System.out.println("Percentage header from fragment: " + (float)(MyUDPProtocol.lengthOfHeader(request)) / (MyUDPProtocol.percentFromAllData(request)));
             sendProtocol(request);
 
             // Add the fragment using `addFragment`
@@ -1088,6 +1091,9 @@ public class P2P {
             }
             fragmentManager.updateMinFragmentSize(fragmentBytes.length);
             fragmentManager.addFragment(request, System.currentTimeMillis());
+            sender += MyUDPProtocol.lengthOfHeader(request);
+            System.out.println("Length of Header: " + MyUDPProtocol.lengthOfHeader(request));
+            System.out.println("Percentage header from fragment: " + (float)(MyUDPProtocol.lengthOfHeader(request)) / (MyUDPProtocol.percentFromAllData(request)));
             sendProtocol(request);
             fragmentManager.setFinalRequest(request);
             start = fragmentManager.getSeqNumberCounter() * fragmentSize;
