@@ -283,15 +283,15 @@ public class P2P {
                         if (Utils.byteToInt(receivedProtocol.getFlags()) == 2) {
                             String savePath = atomicFileName.get();
                             System.out.println("Received file, assembling and saving...");
-                            long length = message.get().split(";")[2].length();
-                            long fullLength = message.get().split(";")[0].length() + message.get().split(";")[1].length() + length;
+                            long length = message.get().split(";")[1].length();
+                            long fullLength = message.get().split(";")[0].length() + message.get().split(";")[1].length();
                             System.out.println("Total file size: " + length + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
                             long numOfFrag = (long) Math.ceil((double) fullLength / fragmentManager.getHowMany());
                             System.out.println("Number of fragments: " + numOfFrag);
                             System.out.println("Normal length of fragments: " + fragmentManager.getHowMany());
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
-                            System.out.println("File saved to: " + savePath);
+                            System.out.println("File saved to: " + message.get().split(";")[1]);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
                             System.out.println("Received message");
                             System.out.println("Total message size: " + message.get().length() + " bytes");
@@ -1101,7 +1101,7 @@ public class P2P {
 
 //D:\\PPI\\2024_RegSim_11.pdf
 //D:\PPI\1_zadanie.pdf
-//D:\PPI\NN3.pdf
+//D:\\PPI\\NN3.pdf
 
 //D:\\PKS TEST DIRECTORY
 
