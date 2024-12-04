@@ -276,7 +276,8 @@ public class Utils {
 
         udpProtocol.setTypeOfMessage(TypeOfMessage.FI.getCode());
         udpProtocol.setWindow(receiver.getWindow());
-        udpProtocol.setFlags(isFile ? (byte) 0 : (byte) 2);
+        boolean flag = receiver.getFlags() == 1;
+        udpProtocol.setFlags(flag ? (byte) 2 : (byte) 0);
 
         udpProtocol.setLengthOfFileName(new byte[2]);
         udpProtocol.setData(null);

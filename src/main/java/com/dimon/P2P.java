@@ -280,7 +280,7 @@ public class P2P {
 
                         fragmentManager.clearPendingFragments(Utils.byteArrayToInt(receivedProtocol.getSequenceNumber()));
 
-                        if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
+                        if (Utils.byteToInt(receivedProtocol.getFlags()) == 2) {
                             String savePath = atomicFileName.get();
                             System.out.println("Received file, assembling and saving...");
                             long length = message.get().split(";")[2].length();
@@ -292,7 +292,7 @@ public class P2P {
                             System.out.println("Normal length of fragments: " + fragmentManager.getHowMany());
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
                             System.out.println("File saved to: " + savePath);
-                        } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 2) {
+                        } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
                             System.out.println("Received message");
                             System.out.println("Total message size: " + message.get().length() + " bytes");
                             System.out.println("Number of fragments: " + Math.ceil((double) message.get().length() / fragmentManager.getHowMany()));
@@ -716,7 +716,7 @@ public class P2P {
             String inputSize = reader.readLine();
             try {
                 int fragmentSize = Integer.parseInt(inputSize);
-                if (fragmentSize > Constants.MAX_SIZE_FRAGMENT) {
+                if (fragmentSize > Constants.MAX_SIZE_FRAGMENT || fragmentSize <= 0) {
                     fragmentSize = Constants.MAX_SIZE_FRAGMENT;
                     System.out.println("Fragment size exceeds max. Set to " + Constants.MAX_SIZE_FRAGMENT);
                 }
