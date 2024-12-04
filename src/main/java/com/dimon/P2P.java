@@ -291,7 +291,7 @@ public class P2P {
                             System.out.println("Number of fragments: " + numOfFrag);
                             System.out.println("Normal length of fragments: " + fragmentManager.getHowMany());
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
-                            System.out.println("File saved to: " + message.get().split(";")[1]);
+                            System.out.println("File saved to: " + message.get().split(";")[0]);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
                             System.out.println("Received message");
                             System.out.println("Total message size: " + message.get().length() + " bytes");
