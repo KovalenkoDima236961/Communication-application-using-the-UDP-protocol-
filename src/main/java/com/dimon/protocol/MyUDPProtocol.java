@@ -372,6 +372,22 @@ public class MyUDPProtocol {
         return result.toString();
     }
 
+    public static int lengthOfHeader(MyUDPProtocol udpProtocol) {
+        int sum = 0;
+        sum += udpProtocol.sequenceNumber.length;
+        sum ++;//udpProtocol.typeOfMessage
+        sum += udpProtocol.checkSumCRC.length;
+        sum += udpProtocol.window.length;
+        sum ++; // flag
+        sum += udpProtocol.lengthOfFileName.length;
+        return sum;
+    }
+
+    public static float percentFromAllData(MyUDPProtocol udpProtocol) {
+        int lengthOfData = udpProtocol.getData() == null ? udpProtocol.getDataFile().getNameLength() + udpProtocol.getDataFile().getFileContent().length : udpProtocol.getData().getData().length();
+        return (float) lengthOfHeader(udpProtocol) / (lengthOfData + 14);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

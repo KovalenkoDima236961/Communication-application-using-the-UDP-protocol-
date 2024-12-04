@@ -42,6 +42,9 @@ public class P2P {
     private static AtomicReference<String> message = new AtomicReference<>(null);
     private static AtomicInteger lastProcessedSeqNumber = new AtomicInteger(-1);
 
+    private static int receiver = 0;
+    private static int sender = 0;
+
     /**
      * The main entry point for the P2P application.
      * Initializes network settings, starts threads for input handling, and processes incoming messages.
@@ -224,7 +227,7 @@ public class P2P {
                         long duration = endTime - startTime;
 
                         fragmentManager.clearPendingFragments(Utils.byteArrayToInt(receivedProtocol.getSequenceNumber()));
-
+                        float percent = 0.0f;
                         if (Utils.byteToInt(receivedProtocol.getFlags()) == 1) {
                             // Get save directory
                             System.out.println("Please enter 5 if you want to save file to another package other default one");
@@ -240,6 +243,7 @@ public class P2P {
                             System.out.println("Total file size: " + fileDescriptor.filePosition + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
                             System.out.println("File saved to: " + savePath);
+                            percent = (float) receiver / (fileDescriptor.filePosition + fileDescriptor.fileNamePosition + (fragmentCounter.get() * 14));
                             fileDescriptor.finalizeFileTransfer(savePath);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 3) {
                             String res = messageDescriptor.getCompleteMessage();
@@ -247,7 +251,10 @@ public class P2P {
                             System.out.println("Total message size: " + res.length() + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
                             System.out.println("RESULT IS: \n" + res);
+                            percent = (float) receiver / (res.length() + (fragmentCounter.get() * 14));
                         }
+                        System.out.println("Percent from all: " + (percent * 100));
+
 
                         sendMessage(7, message.get(),fileDescriptor);
 
@@ -258,6 +265,7 @@ public class P2P {
                         }
 
                         atomicFileName.set("");
+                        receiver = 0;
                         smoothedRTT.set(100.0);
                         message.set(null);
                         expectedNumber.set(0);
@@ -280,10 +288,12 @@ public class P2P {
 
                         fragmentManager.clearPendingFragments(Utils.byteArrayToInt(receivedProtocol.getSequenceNumber()));
 
+                        float percent = 0;
+
                         if (Utils.byteToInt(receivedProtocol.getFlags()) == 2) {
                             String savePath = atomicFileName.get();
                             System.out.println("Received file, assembling and saving...");
-                            long length = message.get().split(";")[1].length();
+                            long length = message.get().split(";")[1].trim().length();
                             long fullLength = message.get().split(";")[0].length() + message.get().split(";")[1].length();
                             System.out.println("Total file size: " + length + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
@@ -292,17 +302,26 @@ public class P2P {
                             System.out.println("Normal length of fragments: " + fragmentManager.getHowMany());
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
                             System.out.println("File saved to: " + message.get().split(";")[0]);
+
+                            percent = (float) sender / (fullLength + numOfFrag*14);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
                             System.out.println("Received message");
+                            int numberOfFragments = (int) Math.ceil((double) message.get().length() / fragmentManager.getHowMany());
                             System.out.println("Total message size: " + message.get().length() + " bytes");
-                            System.out.println("Number of fragments: " + Math.ceil((double) message.get().length() / fragmentManager.getHowMany()));
+                            System.out.println("Number of fragments: " + numberOfFragments);
                             System.out.println("Normal length of fragments: " + fragmentManager.getHowMany());
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
                             System.out.println("Total transfer duration: " + duration + " ms");
+
+                            percent = (float) sender / (message.get().length() + numberOfFragments * 14);
                         }
+                        System.out.println("Percent from all: " + (percent * 100));
+
+
                         atomicFileName.set("");
                         smoothedRTT.set(100.0);
                         message.set(null);
+                        sender = 0;
                         expectedNumber.set(0);
                         fragmentManager.setEnd(false);
                         firstTry.set(false);
@@ -323,6 +342,10 @@ public class P2P {
                     System.out.println("Fragment #" + (fragmentCounter.get() + 1) + " received.");
                     int fragmentSize = receivedProtocol.getData().getData().length();
                     System.out.println("Fragment size: " + fragmentSize);
+
+                    System.out.println("Length of header from this fragment: " + MyUDPProtocol.lengthOfHeader(receivedProtocol));
+                    System.out.println("Percent from this fragment: " + MyUDPProtocol.percentFromAllData(receivedProtocol));
+                    receiver += MyUDPProtocol.lengthOfHeader(receivedProtocol);
 
                     int seq = Utils.byteArrayToInt(receivedProtocol.getSequenceNumber());
 
@@ -422,6 +445,10 @@ public class P2P {
                 case SF -> {
                     System.out.println("Fragment #" + (fragmentCounter.get() + 1) + " received.");
                     System.out.println("Fragment size: " + receivedProtocol.getDataFile().toByteArray().length);
+
+                    System.out.println("Length of header from this fragment: " + MyUDPProtocol.lengthOfHeader(receivedProtocol));
+                    System.out.println("Percent from this fragment: " + MyUDPProtocol.percentFromAllData(receivedProtocol));
+                    receiver += MyUDPProtocol.lengthOfHeader(receivedProtocol);
 
                     DataFile dataFile = receivedProtocol.getDataFile();
                     int seq = Utils.byteArrayToInt(receivedProtocol.getSequenceNumber());
