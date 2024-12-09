@@ -373,14 +373,7 @@ public class MyUDPProtocol {
     }
 
     public static int lengthOfHeader(MyUDPProtocol udpProtocol) {
-        int sum = 0;
-        sum += udpProtocol.sequenceNumber.length;
-        sum ++;//udpProtocol.typeOfMessage
-        sum += udpProtocol.checkSumCRC.length;
-        sum += udpProtocol.window.length;
-        sum ++; // flag
-        sum += udpProtocol.lengthOfFileName.length;
-        return sum;
+        return 14;
     }
 
     public static float percentFromAllData(MyUDPProtocol udpProtocol) {
