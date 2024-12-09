@@ -243,7 +243,7 @@ public class P2P {
                             System.out.println("Total file size: " + fileDescriptor.filePosition + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
                             System.out.println("File saved to: " + savePath);
-                            percent = (float) receiver / (fileDescriptor.filePosition + fileDescriptor.fileNamePosition + (fragmentCounter.get() * 14));
+                            percent = 1 - (float) receiver / (fileDescriptor.filePosition + fileDescriptor.fileNamePosition + (fragmentCounter.get() * 14));
                             fileDescriptor.finalizeFileTransfer(savePath);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 3) {
                             String res = messageDescriptor.getCompleteMessage();
@@ -293,8 +293,8 @@ public class P2P {
                         if (Utils.byteToInt(receivedProtocol.getFlags()) == 2) {
                             String savePath = atomicFileName.get();
                             System.out.println("Received file, assembling and saving...");
-                            long length = message.get().split(";")[1].trim().length();
-                            long fullLength = message.get().split(";")[0].length() + message.get().split(";")[1].length();
+                            long length = Base64.getDecoder().decode(message.get().split(";")[1].trim()).length;
+                            long fullLength = message.get().split(";")[0].trim().length() + length;
                             System.out.println("Total file size: " + length + " bytes");
                             System.out.println("Total transfer duration: " + duration + " ms");
                             long numOfFrag = (long) Math.ceil((double) fullLength / fragmentManager.getHowMany());
@@ -303,7 +303,7 @@ public class P2P {
                             System.out.println("Length of the last fragment: " + fragmentManager.getMinLengthOfFragment());
                             System.out.println("File saved to: " + message.get().split(";")[0]);
 
-                            percent = (float) sender / (fullLength + numOfFrag*14);
+                            percent = 1 - (float) sender / (fullLength + numOfFrag*14);
                         } else if (Utils.byteToInt(receivedProtocol.getFlags()) == 0) {
                             System.out.println("Received message");
                             int numberOfFragments = (int) Math.ceil((double) message.get().length() / fragmentManager.getHowMany());
@@ -1134,7 +1134,9 @@ public class P2P {
 
 //D:\\PPI\\2024_RegSim_11.pdf
 //D:\PPI\1_zadanie.pdf
-//D:\\PPI\\NN3.pdf
+//D:\PPI\NN3.pdf
 
-//D:\\PKS TEST DIRECTORY
+//D:\PKS TEST DIRECTORY
 
+
+//4908468 bytes
